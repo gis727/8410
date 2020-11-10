@@ -1,0 +1,97 @@
+PREFIX : <http://www.exemple.org/>
+
+# a: Quel est le nom de l’enseignant(e) ayant offert le cours de sigle "INF8410" à l'étudiant nommé "Jesse" et à quelle session ?
+SELECT ?teacherName ?sessionSeason ?sessionYear
+WHERE
+{
+  ?teacher a :Teacher ;
+             :name ?teacherName .
+  
+  ?student a :Student ;
+             :name "Jesse" .
+  
+  ?session a :Session ;
+             :year ?sessionYear ;
+             :season ?sessionSeason .
+  
+  ?givenClass a :GivenClass ;
+                :session ?session .
+  
+  ?class a :Class ;
+           :sigleClass "INF8410" .
+  ?givenClass :class ?class .
+  
+  ?student :takesClass ?givenClass .
+  ?teacher :givesClass ?givenClass.
+}
+
+# b: Quel sont les noms des étudiants ayant suivis le cours intitulé "Champs électromagnétiques" avec
+#    l'étudiante nommée "Violet"? (Violet peut elle meme se retrouver dans cette liste).
+
+SELECT ?studentName
+WHERE
+{
+  ?violet a :Student ;
+            :name "Violet" .
+
+  ?student a :Student ;
+             :name ?studentName .
+
+  ?class a :Class ;
+           :titleClass "Champs électromagnétiques" .
+
+  ?givenClass a :GivenClass ;
+                :class ?class .
+
+  ?violet :takesClass ?givenClass .
+  ?student :takesClass ?givenClass .
+}
+
+# c: Quel est l'enseignant(e) ayant offert le plus de cours au total sur toutes les sessions et combien en
+#    a-t-il(elle) offert(e) ?
+SELECT ?teacherName (COUNT(?givenClass) AS ?nbrClass)
+WHERE
+{
+  ?teacher a :Teacher ;
+           :name ?teacherName .
+
+  ?givenClass a :GivenClass .
+
+  ?teacher :givesClass ?givenClass.
+}
+GROUP BY ?teacherName ORDER BY DESC(COUNT(?givenClass)) LIMIT 1
+
+# d: L'étudiant nommé "Leonard" a-t-il suivi les 11 cours offerts au moins une fois chacun ?
+ASK
+{
+  SELECT (COUNT(DISTINCT ?class) AS ?cnt)
+  {
+    ?student a :Student ;
+               :name "Leonard" .
+
+    ?class a :Class .
+
+    ?givenClass a :GivenClass ;
+                  :class ?class .
+
+    ?student :takesClass ?givenClass .
+  } GROUP BY ?student HAVING(?cnt = 11)
+}
+
+# e: Quelle est la moyenne du nombre de crédits suivis par les étudiants pour chaque session ?
+SELECT ?session (AVG(?credits) AS ?totalCredits)
+WHERE
+{
+
+  ?session a :Session .
+
+  ?class a :Class ;
+           :numberCredits ?credits .
+  
+  ?givenClass a :GivenClass ;
+                :class ?class ;
+                :session ?session .
+
+  ?student a :Student ;
+             :takesClass ?givenClass .
+} GROUP BY ?session
