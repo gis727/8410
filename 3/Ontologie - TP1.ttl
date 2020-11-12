@@ -1,0 +1,399 @@
+#PREFIXES:
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix tl: <http://purl.org/NET/c4dm/timeline.owl#>.
+
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix schema: <https://schema.org#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix event: <http://purl.org/NET/c4dm/event.owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix : <http://www.exemple.com/ontologies/the-game-ontology#> .
+
+#REFERENCES
+<http://www.exemple.com/ontologies/the-game-ontology#> a owl:Ontology ;
+  dc:created "2020-10-20"^^dc:date ;
+  dc:creator <mailto:arthur.garnier@polymtl.ca> ;
+  dc:creator <mailto:ismael.gbian@polymtl.ca> ;
+  dc:creator <mailto:jeremy.boulet@polymtl.ca> ;
+  rdfs:label "the game ontology"@en ;
+.
+
+#########################
+#       Classes         #
+#########################
+
+# Classes liées au joueur
+:Player a rdfs:Class ;
+  rdfs:comment "Un être humain jouant un jeu."@fr ;
+  rdfs:label "Player"@en ;
+  rdfs:subClassOf foaf:Person ;
+.
+:GameElement a rdfs:Class ;
+  rdfs:comment "Un élément quelconque du jeu (caractère, item, habileté...)."@fr ;
+  rdfs:label "Game element"@en ;
+  rdfs:subClassOf schema:Thing ;
+.
+:Character a rdfs:Class ;
+  rdfs:comment "Un caractère quelconque du jeu (NPC ou PC)."@fr ;
+  rdfs:label "Character"@en ;
+  rdfs:subClassOf :GameElement ;
+.
+:PlayerCharacter a rdfs:Class ;
+  rdfs:comment "L'avatar ou le caractère d'un joueur."@fr ;
+  rdfs:label "Player character"@en ;
+  rdfs:subClassOf :Character ;
+.
+:NonPlayerCharacter a rdfs:Class ;
+  rdfs:comment "Un agent intelligent du jeu (minion, boss...)."@fr ;
+  rdfs:label "Non player character"@en ;
+  rdfs:subClassOf :Character ;
+.
+:Item a rdfs:Class ;
+  rdfs:comment "Tout élément d'un jeu qui n'est pas un caractère (une potion, une maison) et qui peut (ou pas) être possédé par un joueur."@fr ;
+  rdfs:label "Item"@en ;
+  rdfs:subClassOf :GameElement ;
+.
+:Ability a rdfs:Class ;
+  rdfs:comment "Toute habileté d'un élément du jeu."@fr ;
+  rdfs:label "Ability"@en ;
+  rdfs:subClassOf schema:Thing ;
+.
+:Achievement a rdfs:Class ;
+  rdfs:comment "Un objectif de jeu qui peut être accomli par un joueur."@fr ;
+  rdfs:label "Achievement"@en ;
+  rdfs:subClassOf schema:Thing ;
+.
+:GameTeam a rdfs:Class ;
+  rdfs:comment "Une équipe de jeu qui regroupe plusieurs joueurs."@fr ;
+  rdfs:label "Game team"@en ;
+  rdfs:subClassOf schema:Thing ;
+.
+
+# Classes liées aux caractéristiques du jeu
+:Game a rdfs:Class ;
+  rdfs:comment "Un jeu."@fr ;
+  rdfs:label "Game"@en ;
+  rdfs:subClassOf schema:VideoGame ;
+.
+:PlayingArea a rdfs:Class ;
+  rdfs:comment "Une platforme ou un terrain ou peuvent se dérouler des parties."@fr ;
+  rdfs:label "Playing area"@en ;
+  rdfs:subClassOf :GameElement ;
+.
+:GameGenre a rdfs:Class ;
+  rdfs:comment "La genre d'un jeu."@fr ;
+  rdfs:label "Game genre"@en ;
+  rdfs:subClassOf schema:Thing ;
+.
+:GameSeason a rdfs:Class ;
+  rdfs:comment "La saison d'un jeu."@fr ;
+  rdfs:label "Game season"@en ;
+  rdfs:subClassOf schema:Thing ;
+.
+:GameCurrency a rdfs:Class ;
+  rdfs:comment "La monnaie virtuelle utilisée dans un jeu."@fr ;
+  rdfs:label "Game currency"@en ;
+  rdfs:subClassOf schema:Thing ;
+.
+:GameSession a rdfs:Class ;
+  rdfs:comment "Une partie de jeu."@fr ;
+  rdfs:label "Game session"@en ;
+  rdfs:subClassOf schema:Thing ;
+.
+
+# Classes liées aux événements durant une partie
+:GameEvent a rdfs:Class ;
+  rdfs:comment "Un événement quelconque du jeu."@fr ;
+  rdfs:label "Game event"@en ;
+  rdfs:subClassOf event:Event ;
+.
+:InGameEvent a rdfs:Class ;
+  rdfs:comment "Un événement du jeu qui n'est pas initié par un joueur (personnage meurt, lancement d'une animation, exclusion d'un joueur...)."@fr ;
+  rdfs:label "In-game event"@en ;
+  rdfs:subClassOf :GameEvent ;
+.
+:PlayerAction a rdfs:Class ;
+  rdfs:comment "Une action du joueur (saut, attaque d'un ennemi...)."@fr ;
+  rdfs:label "Player action"@en ;
+  rdfs:subClassOf :GameEvent ;
+.
+:PurchaseEvent a rdfs:Class ;
+  rdfs:comment "Achat d'un produit du jeu initié par un joueur."@fr ;
+  rdfs:label "Purchase event"@en ;
+  rdfs:subClassOf :GameEvent ;
+.
+
+
+#########################
+#    Data Properties    #
+#########################
+
+# Propriétés liées au joueur ou aux caractères
+:username a owl:DatatypeProperty ;
+  rdfs:comment "Le pseudo d'un joueur."@fr ;
+  rdfs:label "username"@en ;
+  rdfs:domain :Player ;
+  rdfs:range xsd:string ;
+.
+:playtime a owl:DatatypeProperty ;
+  rdfs:comment "L'expérience en temps de jeu d'un joueur."@fr ;
+  rdfs:label "playtime"@en ;
+  rdfs:domain :Player ;
+  rdfs:range xsd:duration ;
+.
+:experience a owl:DatatypeProperty ;
+  rdfs:comment "L'expérience d'un caractère."@fr ;
+  rdfs:label "experience"@en ;
+  rdfs:domain :Character ;
+  rdfs:range xsd:nonNegativeInteger ;
+.
+
+# Propriétés liées à une partie
+:duration a owl:DatatypeProperty ;
+  rdfs:comment "La durée d'une partie'."@fr ;
+  rdfs:label "game duration"@en ;
+  rdfs:domain :GameSession ;
+  rdfs:range xsd:duration ;
+.
+:startTime a owl:DatatypeProperty ;
+  rdfs:comment "L'heure de début d'une partie'."@fr ;
+  rdfs:label "session start time"@en ;
+  rdfs:domain :GameSession ;
+  rdfs:range xsd:dateTime ;
+.
+:endTime a owl:DatatypeProperty ;
+  rdfs:comment "L'heure de fin d'une partie'."@fr ;
+  rdfs:label "session end time"@en ;
+  rdfs:domain :GameSession ;
+  rdfs:range xsd:dateTime ;
+.
+:level a owl:DatatypeProperty ;
+  rdfs:comment "Le niveau d'un terrain de jeu."@fr ;
+  rdfs:label "area level"@en ;
+  rdfs:domain :PlayingArea ;
+  rdfs:range xsd:nonNegativeInteger ;
+.
+
+# Propriétés liées à un achat
+:purchaseAmount a owl:DatatypeProperty ;
+  rdfs:comment "La quantité d'argent virtuel utilisée lors d'un achat."@fr ;
+  rdfs:label "purchase amount"@en ;
+  rdfs:domain :PurchaseEvent ;
+  rdfs:range xsd:nonNegativeInteger ;
+.
+
+
+#########################
+#   Objects Properties  #
+#########################
+
+# Propriétés liées à un joueur, un caractère ou un élément du jeu
+:plays a owl:ObjectProperty ;
+  rdfs:comment "Indique qu'un joueur joue à un jeu."@fr ;
+  rdfs:label "plays"@en ;
+  rdfs:domain :Player ;
+  rdfs:range :Game ;
+.
+:ownsCharacter a owl:ObjectProperty ;
+  rdfs:comment "Indique la possession d'un caractère par un joueur."@fr ;
+  rdfs:label "owns character"@en ;
+  rdfs:domain :Player ;
+  rdfs:range :PlayerCharacter ;
+.
+:ownsItem a owl:ObjectProperty ;
+  rdfs:comment "Indique la possession d'un item par un caractère."@fr ;
+  rdfs:label "owns item"@en ;
+  rdfs:domain :Character ;
+  rdfs:range :Item ;
+.
+:unlocked a owl:ObjectProperty ;
+  rdfs:comment "Indique l'atteinte d'un objectif par un joueur."@fr ;
+  rdfs:label "owns"@en ;
+  rdfs:domain :Player ;
+  rdfs:range :Achievement ;
+.
+:isFriendWith a owl:ObjectProperty ;
+  rdfs:subPropertyOf foaf:knows ;
+  rdfs:comment "Indique l'amité entre deux joueurs."@fr ;
+  rdfs:label "is friend with"@en ;
+  rdfs:domain :Player ;
+  rdfs:range :Player ;
+.
+:memberOf a owl:ObjectProperty ;
+  rdfs:comment "Indique l'équipe à laquelle appartient un joueur."@fr ;
+  rdfs:label "member of"@en ;
+  rdfs:domain :Player ;
+  rdfs:range :GameTeam ;
+.
+:hasAbility a owl:ObjectProperty ;
+  rdfs:comment "Indique la possession d'une habileté par un élément du jeu (joueur, item)."@fr ;
+  rdfs:label "has ability"@en ;
+  rdfs:domain :GameElement ;
+  rdfs:range :Ability ;
+.
+
+# Propriétés liées à un achat
+:purchasedElement a owl:ObjectProperty ;
+  rdfs:comment "L'élément acheté durant une transaction."@fr ;
+  rdfs:label "Purchased element"@en ;
+  rdfs:domain :PurchaseEvent ;
+  rdfs:range :GameElement ;
+.
+
+# Propriétés liées à une partie
+:sessionOf a owl:ObjectProperty ;
+  rdfs:comment "Indique le jeu auquel appartient une partie."@fr ;
+  rdfs:label "session of"@en ;
+  rdfs:domain :GameSession ;
+  rdfs:range :Game ;
+.
+:happenedIn a owl:ObjectProperty ;
+  rdfs:comment "Indique le lieu de déroulement d'une partie."@fr ;
+  rdfs:label "happened in"@en ;
+  rdfs:domain :GameSession ;
+  rdfs:range :PlayingArea ;
+.
+:gameEvents a owl:ObjectProperty ;
+  rdfs:comment "Indique les événements ayant lieu durant une partie."@fr ;
+  rdfs:label "game events"@en ;
+  rdfs:domain :GameSession ;
+  rdfs:range :GameEvent ;
+.
+
+# Propriétés liées aux caractéristiques d'un jeu
+:hasLeaderBoard a owl:ObjectProperty ;
+  rdfs:comment "Indique le classement des meilleurs joueurs d'un jeu."@fr ;
+  rdfs:label "has leader board"@en ;
+  rdfs:domain :Game ;
+  rdfs:range :Player ;
+.
+:hasPlayingArea a owl:ObjectProperty ;
+  rdfs:comment "Indique les terrains disponibles dans un jeu."@fr ;
+  rdfs:label "has playing area"@en ;
+  rdfs:domain :Game ;
+  rdfs:range :PlayingArea ;
+.
+:hasSeason a owl:ObjectProperty ;
+  rdfs:comment "Indique les saisons d'un jeu."@fr ;
+  rdfs:label "has season"@en ;
+  rdfs:domain :Game ;
+  rdfs:range :GameSeason ;
+.
+:hasAchievement a owl:ObjectProperty ;
+  rdfs:comment "Indique les accomplissements disponibles dans un jeu."@fr ;
+  rdfs:label "has achievement"@en ;
+  rdfs:domain :Game ;
+  rdfs:range :Achievement ;
+.
+:hasCurrency a owl:ObjectProperty ;
+  rdfs:comment "Indique la monnaie virtuelle utilisée dans un jeu."@fr ;
+  rdfs:label "has currency"@en ;
+  rdfs:domain :Game ;
+  rdfs:range :GameCurrency ;
+.
+:isOfGenre a owl:ObjectProperty ;
+  rdfs:comment "Indique le genre d'un jeu."@fr ;
+  rdfs:label "is of genre"@en ;
+  rdfs:domain :Game ;
+  rdfs:range :GameGenre ;
+.
+
+
+#########################
+#    Basic Instances    #
+#########################
+
+# Instances pour les genres de jeux
+:moba_game a :GameGenre ;
+  schema:name "MOBA"^^xsd:string ;
+.
+:battle_royale a :GameGenre ;
+  schema:name "Battle royale"^^xsd:string ;
+.
+:simulation_game a :GameGenre ;
+  schema:name "Simulation game"^^xsd:string ;
+.
+
+# Instances pour les accomplissements de jeux
+:tutorial_acc a :Achievement ;
+  schema:name "Tutorial achievement"^^xsd:string ;
+.
+:first_kill_acc a :Achievement ;
+  schema:name "First kill achievement"^^xsd:string ;
+.
+
+# Instances pour les saisons de jeux
+:season_1 a :GameSeason ;
+  schema:name "Season 1"^^xsd:string ;
+.
+:season_2 a :GameSeason ;
+  schema:name "Season 2"^^xsd:string ;
+.
+
+# Instances pour les monnaies de jeux
+:gold_currency a :GameCurrency ;
+  schema:name "Gold"^^xsd:string ;
+.
+:silver_currency a :GameCurrency ;
+  schema:name "Silver"^^xsd:string ;
+.
+:riot_currency a :GameCurrency ;
+  schema:name "Riot points"^^xsd:string ;
+.
+
+# Instances pour les habiletés
+:attack_ability a :Ability ;
+  schema:name "Attack ability"^^xsd:string ;
+.
+:defense_ability a :Ability ;
+  schema:name "Defense ability"^^xsd:string ;
+.
+
+# Instance pour les items de jeux
+:area_map a :Item ;
+  schema:name "Area map"^^xsd:string ;
+.
+:default_weapon a :Item ;
+  schema:name "Default weapon"^^xsd:string ;
+.
+
+# Instances pour les caractères
+:default_character a :PlayerCharacter ;
+  schema:name "Default character"^^xsd:string ;
+  :experience "0"^^xsd:nonNegativeInteger ;
+  :hasAbility :defense_ability ;
+  :ownsItem :area_map ;
+.
+:ultimate_boss a :NonPlayerCharacter ;
+  schema:name "Ultimate boss"^^xsd:string ;
+  :experience "100"^^xsd:nonNegativeInteger ;
+  :hasAbility :defense_ability, :attack_ability ;
+.
+
+# Instances pour les équipes de jeux
+:default_team_1 a :GameTeam ;
+  schema:name "Default team 1"^^xsd:string ;
+.
+:default_team_2 a :GameTeam ;
+  schema:name "Default team 2"^^xsd:string ;
+.
+
+# Instances de quelques jeux
+:Fortnite a :Game ;
+  schema:name "Fortnite"^^xsd:string ;
+  :isOfGenre :battle_royale ;
+  :hasSeason :season_1, :season_2 ;
+  :hasAchievement :tutorial_acc, :first_kill_acc ;
+  :hasCurrency :gold_currency ;
+.
+
+:EliteDangerous a :Game ;
+  schema:name "Elite dangerous"^^xsd:string ;
+  :isOfGenre :simulation_game ;
+  :hasSeason :season_1 ;
+  :hasAchievement :tutorial_acc, :first_kill_acc ;
+  :hasCurrency :gold_currency, :silver_currency ;
+.

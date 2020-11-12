@@ -1,0 +1,53 @@
+@prefix : <http://www.exemple.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+
+
+# a: Une personne doit avoir un nom au format xsd:string.
+:PersonShape
+    a sh:NodeShape ;
+    sh:targetClass :Person ;
+    sh:property [
+        sh:path :name ;
+        sh:datatype xsd:string ;
+    ] .
+
+
+
+# b: Un étudiant doit avoir exactement 1 matricule.
+:StudentShape
+    a sh:NodeShape ;
+    sh:targetClass :Student ;
+    sh:property [
+        sh:path :matricule ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+# e: Un étudiant doit avoir suivis au moins une fois le cours INF3005
+    sh:property [
+        sh:path (:takesClass :class) ;
+        sh:hasValue :INF3005 ;
+        sh:minCount 1 ;
+    ] .
+
+
+
+# c: Un cours doit avoir un nombre de crédits qui lui est attribué entre 1 et 3 inclus.
+:ClassShape
+    a sh:NodeShape ;
+    sh:targetClass :Class ;
+    sh:property [
+        sh:path :numberCredits ;
+        sh:minInclusive 1 ;
+        sh:maxInclusive 3 ;
+    ] ;
+
+
+
+# d: Le sigle d’un cours doit avoir une longueur minimale et maximale de 7 caractères.
+    sh:property [
+        sh:path :sigleClass ;
+        sh:minLength 7 ;
+        sh:maxLength 7 ;
+    ] .
