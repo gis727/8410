@@ -10,7 +10,7 @@
 @prefix event: <http://purl.org/NET/c4dm/event.owl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-@prefix : <http://www.exemple.com/ontologies/the-game-ontology#> .
+@prefix : <http://www.exemple.org/> .
 
 #REFERENCES
 <http://www.exemple.com/ontologies/the-game-ontology#> a owl:Ontology ;
@@ -396,4 +396,107 @@
   :hasSeason :season_1 ;
   :hasAchievement :tutorial_acc, :first_kill_acc ;
   :hasCurrency :gold_currency, :silver_currency ;
+.
+
+
+
+#########################
+#       EXEMPLES        #
+#########################
+
+# EXEMPLE 1:
+# "LOL" est un jeu du genre "MOBA" qui a 3 arènes de combat (map 1-3), 2 saisons (season 1-2)
+# et un tableau des meilleurs joueurs (dont le meilleur est "best player"). On y achète des items
+# avec des "Riot Points" et on peut officielement y accomplir 2 exploits (le tutoriel et le premier kill).
+:map_2 a :PlayingArea ;
+  schema:name "map 2"^^xsd:string ;
+.
+
+:LOL a :Game ;
+  schema:name "LOL"^^xsd:string ;
+  :isOfGenre :moba_game ;
+  :hasPlayingArea [ a :PlayingArea ; schema:name "map 1"^^xsd:string ;] ,
+                   :map_2,
+                   [ a :PlayingArea ; schema:name "map 3"^^xsd:string ;] ;
+  :hasSeason :season_1 , :season_2 ;
+  :hasAchievement :tutorial_acc , :first_kill_acc ;
+  :hasLeaderBoard [ a :Player ; schema:username "best player"^^xsd:string ;] ;
+  :hasCurrency :riot_currency ;
+.
+
+
+# EXEMPLE 2:
+# "player1" qui joue à "LOL" avec 80 points d'expérience, possède un caractère nommé "Aatrox"
+# possédant une bague magique "The devils's ring", appartient à l'équipe "Only BOT",
+# et joue aussi à "GTA". "player1" a accompli le tutoriel et le 1er kill.
+:player1 a :Player;
+  :username "player1"^^xsd:string ;
+  :plays :LOL;
+  :experience "80"^^xsd:nonNegativeInteger ;
+  :owns [
+    a :PlayerCharacter ;
+    schema:name "Aatrox"^^xsd:string ;
+    :ownsItem [ a :Item ; schema:name "The devils's ring"^^xsd:string ;];
+  ];
+  :memberOf [ a :GameTeam ; schema:name "Only BOT"^^xsd:string ;];
+  :plays [ a :Game ; schema:name "GTA"^^xsd:string ;];
+  :unlocked :tutorial_acc , :first_kill_acc ;
+.
+
+
+# EXEMPLE 3:
+# "noob" est un ami de "player1" qui joue aussi à "LOL".
+# "noob" a 15 points d'expérience, 9 heures de jeu, et possède
+# un caractère ayant l'habileté "One shot".
+:noob a :Player;
+  :username "noob"^^xsd:string ;
+  :isFriendWith :player1;
+  :plays :LOL;
+  :experience "15"^^xsd:nonNegativeInteger ;
+  :playtime "P9h"^^xsd:duration ;
+  :owns [ a :PlayerCharacter ; :hasAbility [a :Ability ; schema:name "One shot"^^xsd:string ;]];
+.
+
+
+# EXEMPLE 4:
+# La "Session1" du jeu "LOL" a débuté à 12h00 le 01 octobre 2020 et a finis le meme jour à 12h30.
+# Durant cette session qui s'est déroulé dans l'arène "map 2", "noob" a acheté une grosse
+# épée nommée "Big Sword" à 300 crédits de jeu avec laquelle il a attaqué "player1" à
+# 12h10 pendant 5 minutes avant de se faire éliminer du jeu à 12h20.
+:Session1 a :GameSession ;
+  :startTime "2020-10-01T12:00:00"^^xsd:dateTime ;
+  :endTime "2020-10-01T12:30:00"^^xsd:dateTime ;
+  :sessionOf :LOL ;
+  :happenedIn :map_2;
+
+  :gameEvents 
+
+    # Achat de l'épée par noob
+    [
+      a :PurchaseEvent ;
+      event:agent :noob ;
+      :purchaseAmount "300"^^xsd:nonNegativeInteger ;
+      :purchasedElement [a :Item ; schema:name "Big Sword"]
+    ] ,
+
+    # noob attaque player1
+    [
+      a :PlayerAction ;
+      event:agent :noob ;
+      event:factor :player1 ;
+      event:name "Attack"^^xsd:string ;
+      event:time [
+        a tl:Interval ;
+        tl:at "2020-10-01T12:10:00"^^xsd:dateTime ;
+        tl:duration "P5m"^^xsd:duration;
+      ];
+    ] ,
+
+    # Mort de noob
+    [
+      a :InGameEvent ;
+      event:factor :noob ;
+      event:name "Death"^^xsd:string ;
+      event:time [ a tl:Instant ; tl:at "2020-10-01T12:20:00"^^xsd:dateTime ; ]
+    ] ;
 .

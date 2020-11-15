@@ -1,15 +1,68 @@
 PREFIX : <http://www.exemple.org/>
+PREFIX schema: <https://schema.org#>
+PREFIX event: <http://purl.org/NET/c4dm/event.owl#>
 
-# 1: Quelle était l'action du joueur "noob" juste avant sa mort durant la session 1 du jeu "LOL"?
+# 1: Quelle joueurs ont été attaqués par le joueur "noob" durant la session 1 du jeu "LOL"?
+SELECT ?victimName
+WHERE
+{
+  ?noob a :Player ;
+          :username "noob" .
 
+  ?victim a :Player ;
+          :username ?victimName .
+
+  ?playerAction a :PlayerAction ;
+                  event:name "Attack" ;
+                  event:agent ?noob ;
+                  event:factor ?victim .
+  :Session1 :gameEvents ?playerAction.
+}
 
 # 2: Quels joueurs ont terminé tous les accomplissements du jeu nommé "LOL"?
+SELECT ?playername
+WHERE
+{
+  ?acc a :Achievement .
 
+  ?lol a :Game ;
+         schema:name "LOL" ;
+         :hasAchievement ?acc .
 
-# 3: Quelle est la moyenne des expériences de tous les joueurs?
+  ?player a :Player ;
+            :username ?playername ;
+            :plays ?lol ;
+            :unlocked ?acc .
+} GROUP BY ?player ?playername
 
+# 3: Quelle est la moyenne des expériences de tous les joueurs du jeu nommé "LOL"?
+SELECT (AVG(?exp) AS ?MoyenneExperiences)
+WHERE
+{
+  ?lol a :Game ;
+         schema:name "LOL" .
 
-# 4: Les joueurs "noob" et "player1" jouent-ils exactement aux meme jeux?
+  ?player a :Player ;
+            :plays ?lol ;
+            :experience ?exp .
+}
 
+# 4: Les joueurs "noob" et "player1" ont-ils au moins 2 jeu en commun?
+ASK
+{
+  SELECT (COUNT(DISTINCT ?game) AS ?cnt)
+  {
+    ?game a :Game .
+
+    ?noob a :Player ;
+            :plays ?game ;
+            :username "noob" .
+
+    ?player1 a :Player ;
+               :plays ?game ;
+               :username "player1" .
+
+  } GROUP BY ?game HAVING(?cnt >= 2)
+}
 
 # 5: ...
