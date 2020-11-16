@@ -2,7 +2,8 @@ PREFIX : <http://www.exemple.org/>
 PREFIX schema: <https://schema.org#>
 PREFIX event: <http://purl.org/NET/c4dm/event.owl#>
 
-# 1: Quelle joueurs ont été attaqués par le joueur "noob" durant la session 1 du jeu "LOL"?
+
+# a: Quels joueurs ont été attaqués par le joueur "noob" durant la session 1 du jeu "LOL"?
 SELECT ?victimName
 WHERE
 {
@@ -19,7 +20,7 @@ WHERE
   :Session1 :gameEvents ?playerAction.
 }
 
-# 2: Quels joueurs ont terminé tous les accomplissements du jeu nommé "LOL"?
+# b: Quels joueurs ont terminé tous les accomplissements du jeu nommé "LOL"?
 SELECT ?playername
 WHERE
 {
@@ -35,7 +36,7 @@ WHERE
             :unlocked ?acc .
 } GROUP BY ?player ?playername
 
-# 3: Quelle est la moyenne des expériences de tous les joueurs du jeu nommé "LOL"?
+# c: Quelle est la moyenne des expériences de tous les joueurs du jeu nommé "LOL"?
 SELECT (AVG(?exp) AS ?MoyenneExperiences)
 WHERE
 {
@@ -47,7 +48,7 @@ WHERE
             :experience ?exp .
 }
 
-# 4: Les joueurs "noob" et "player1" ont-ils au moins 2 jeu en commun?
+# d: Les joueurs "noob" et "player1" ont-ils au moins 2 jeux en commun?
 ASK
 {
   SELECT (COUNT(DISTINCT ?game) AS ?cnt)
@@ -65,4 +66,22 @@ ASK
   } GROUP BY ?game HAVING(?cnt >= 2)
 }
 
-# 5: ...
+# e: Quels objets a acheté le joueur "noob" lors de la session 1?
+
+SELECT ?itemName
+WHERE
+{
+
+  :Session1 :gameEvents ?event .
+
+  ?noob a :Player ;
+          :username "noob" .
+
+  ?event a :PurchaseEvent ;
+       event:agent ?noob ;
+       :purchasedElement ?item .
+  
+  ?item a :Item ;
+          schema:name ?itemName
+ 
+}

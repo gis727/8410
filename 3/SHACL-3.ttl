@@ -1,11 +1,13 @@
 @prefix : <http://www.exemple.org/> .
+@prefix schema: <https://schema.org#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix event: <http://purl.org/NET/c4dm/event.owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 
-# 1: Tout joueur doit avoir:
-#    - un username au format xsd:string de longeur comprise entre 4 et 6 caractères (inclusifs)
+# a: Tout joueur doit avoir:
+#    - un username au format xsd:string de longueur comprise entre 4 et 6 caractères (inclusifs)
 #    - une expérience au format xsd:nonNegativeInteger comprise entre 0 et 100
 :PlayerShape
     a sh:NodeShape ;
@@ -24,7 +26,7 @@
     ] ;
 
 
-# 2: Tout joueur doit avoir l'accomplisment "Tutorial achievement".
+# b: Tout joueur doit avoir l'accomplissement "Tutorial achievement".
     sh:property [
         sh:path :unlocked ;
         sh:hasValue :tutorial_acc ;
@@ -32,7 +34,7 @@
     ] .
 
 
-# 3: Tout jeux doit avoir:
+# c: Tout jeux doit avoir:
 #    - au moins 1 monnaie
 #    - au moins 1 saison
 #    - au moins 1 playing area
@@ -40,13 +42,13 @@
 :GameShape
     a sh:NodeShape ;
     sh:targetClass :Game ;
-    sh:property [ sh:path :hasCurrency ; sh:minCount 1 ; ] ;
-    sh:property [ sh:path :hasSeason   ; sh:minCount 1 ; ] ;
+    sh:property [ sh:path :hasCurrency     ; sh:minCount 1 ; ] ;
+    sh:property [ sh:path :hasSeason       ; sh:minCount 1 ; ] ;
     sh:property [ sh:path :hasPlayingArea  ; sh:minCount 1 ; ] ;
-    sh:property [ sh:path :isOfGenre    ; sh:minCount 1 ; sh:maxCount 1 ; ] .
+    sh:property [ sh:path :isOfGenre       ; sh:minCount 1 ; sh:maxCount 1 ; ] .
 
 
-# 4: Seul les joueurs ayant une expérience d'au moins 20 (inclusif) peuvent effectuer un achat.
+# d: Seul les joueurs ayant une expérience d'au moins 20 (inclusif) peuvent effectuer un achat.
 :BuyerShape
     a sh:NodeShape ;
     sh:property [
@@ -62,4 +64,13 @@
     ] .
 
 
-# 5: ...
+# e: Le genre d'un jeu ne doit contenir aucune autre propriété à part son nom au format xsd:string.
+:GameGenreShape
+    a sh:NodeShape ;
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:targetClass :GameGenre ;
+    sh:property [
+        sh:path schema:name ;
+        sh:datatype xsd:string ;
+    ] .
